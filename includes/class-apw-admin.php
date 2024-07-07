@@ -288,8 +288,6 @@ class APW_Admin {
 
     public function manual_posting() {
         check_ajax_referer('manual_posting_nonce', 'security');
-        error_log('post_title ::: '.print_r($_POST['post_title'], true));
-        error_log('post_title ::: '.print_r($_POST['post_category'], true));
 
         $post_title = sanitize_text_field($_POST['post_title']);
         $post_category = intval($_POST['post_category']);
@@ -314,7 +312,63 @@ class APW_Admin {
             error_log('$template_content_with_title ::: '.$template_content_with_title);
 
             // Buat Prompt berdasarkan input pengguna
-            $prompt = APW_Prompt::create_prompt($gaya_bahasa, $gaya_penulisan, $bahasa);
+            $sample_prompt = "I want you to at as a professional SEO. You are doing keyword research for (Learning SEO). The first thing you should do is to search for the keyword on Google and understand what kind of content is ranking. From that information, you should then choose a title for the article that we are going to write.
+
+Then, you should list 10-20 questions or common themes associated with that keyword. These will be the core of the outline for the article. You should use LSI and NLP keyword logic in order to ensure that we are covering everything that needs to be covered to properly rank this article.
+
+You should now start to produce the outline, using the questions and the LSI/NLP keywords. Think of anything that should be logically included in the outline that will help me rank on Google for this keyword. The outline should be incredibly long, detailed, and comprehensive. It should be the ultimate one stop shop for the topic that we are writing about.
+
+Think about the people also ask section of Google, and what is likely to be on that section. Think of semantically related searches and other content that is similar to be included in the outline. The outline is the most important thing here, make sure it’s like a table of contents at the top of an article, so it should just include the basic information, and a small extract for each heading. It should be separated into at least 30 headings and subheadings.
+
+Please try to make sure the outline of an article includes slightly more and niche information than every other article on the same topic.
+
+
+Identify the target audience for the article. Who is this article for? What are their needs and interests? Once you know your audience, you can tailor the outline to address their specific concerns.
+Set clear goals for the article. What do you want the reader to learn or achieve after reading the article? Having clear goals will help you stay focused and on track as you create the outline.
+Do a competitive analysis. What other articles are ranking for the same keyword? What are they doing well? What could they be doing better? This information can help you create an outline that is more comprehensive and informative than the competition.
+Use data to support your claims. When you're writing about black tie attire for men, don't just rely on your own opinions. Use data to back up your claims. This will make your article more credible and authoritative.
+Keep the tone and style consistent. The tone and style of your article should be consistent throughout the outline. This will help create a smooth and easy-to-read experience for the reader.
+Proofread carefully. Before you publish the outline, make sure to proofread it carefully for any errors in grammar, spelling, or punctuation. This will make your article look more professional and polished.
+
+Please use Indonesian language and Make sure to follow the following format:
+Use the # sign for the main heading.
+Use the ## sign for the main subheading.
+Use the ### sign for the secondary subheading.
+Use the - sign for items in a list.
+Use appropriate indentation to indicate hierarchy.";
+            // $prompt = APW_Prompt::create_prompt($gaya_bahasa, $gaya_penulisan, $bahasa, $sample_prompt);
+            $prompt = APW_Prompt::create_promptV2($bahasa, $template_content_with_title);
+            error_log('$prompt ::: '.$prompt);
+
+            $outline_content = APW_API::generate_outline_with_chatgpt($prompt);
+            // error_log('$generate_content_with_chatgpt ::: '.$outline_content);
+
+            // $test_translate_language = APW_API::generate_translate_with_chatgpt($test_language);
+            // error_log('$test_language ::: '.print_r($test_translate_language, true));
+
+
+            $prompt_base_remember = "Please ignore all previous instructions. Now I want you to keep in mind the following outline. The outline that you keep in mind will be used to create the article after this process. Have you keep in mind? If you have said yes or if you haven't said no. Please don't generate the outline at this time, just remember it. Understand?";
+            $prompt_base = "Saya ingin Anda menulis sebuah artikel berdasarkan bagian dari outline berikut. Pastikan artikel tersebut terstruktur dengan baik, memiliki bahasa yang mengalir dengan lancar, dan mencakup semua poin yang disebutkan dalam outline. Berikut adalah outline artikel yang perlu Anda ikuti:";
+            $prompt_base_summarize = "Saya ingin Anda menulis sebuah ringkasan berdasarkan outline berikut. Pastikan ringkasan tersebut terstruktur dengan baik, memiliki bahasa yang mengalir dengan lancar, dan mencakup semua poin yang disebutkan dalam outline. Gunakan gaya penulisan \"$gaya_penulisan\", gunakan juga gaya bahasa \"$gaya_bahasa\", dan tulis kedalam Bahasa \"$bahasa\" seperti yang telah ditentukan. Berikut adalah outline artikel yang perlu Anda ikuti:";
+
+            // $remember = APW_API::generate_remember_outline($outline_content, $prompt_base_remember);
+            // error_log('$content REMEMBER ::: ' . $remember);
+            // $full_article = APW_API::generate_full_article($outline_content, $prompt_base, $prompt_base_summarize);
+            // error_log('$generate_full_article ::: '.print_r($full_article, true));
+            // error_log('$content FINISH ::: ');
+            
+            // $outline_to_array = APW_Template::parseMarkdownToArray($pars_to_array);
+            // error_log('$parseTextToArray ::: '.print_r($outline_to_array, true));
+            // error_log('$parseTextToArray ::: '.json_encode($outline_to_array, JSON_PRETTY_PRINT));
+
+            //generate Outline
+            //Parsing outline
+            //add summary on top article
+            //get outline per section
+            //get outline per step
+            //generate content per outline step - looping
+            //make sure concating full generate content per section
+            //insert to Database
 
 
             // Generate konten artikel menggunakan API
@@ -323,8 +377,8 @@ class APW_Admin {
 
             // Generate gambar menggunakan API
             // $image_url = APW_Image::get_image_from_unsplash('related keyword');
-            // $image_url = APW_Image::get_image_from_pexels('SEO');
-            // error_log('$get_image_from_pexels ::: '.$image_url);
+            $image_url = APW_Image::get_image_from_pexels('SEO');
+            error_log('$get_image_from_pexels ::: '.$image_url);
 
             // Membuat artikel baru
             // $post_data = array(

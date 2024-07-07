@@ -100,8 +100,6 @@
     jQuery(document).ready(function($) {
         $('#manual-posting-form').on('submit', function(e) {
             e.preventDefault();
-            console.log('adfadfadfdf ::: '+$('#post-title').val());
-            console.log('adfadfadfdf ::: '+$('#post-category').val());
             
             var data = {
                 action: 'manual_posting',
